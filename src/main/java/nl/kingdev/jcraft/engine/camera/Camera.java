@@ -1,13 +1,15 @@
 package nl.kingdev.jcraft.engine.camera;
 
 
+import javax.vecmath.Vector2f;
 import lombok.Setter;
-import nl.kingdev.jcraft.engine.utils.MatrixUtils;
+import nl.kingdev.jcraft.engine.utils.MouseUtils;
 import nl.kingdev.jcraft.engine.window.Window;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class Camera {
+    private static final float MOUSE_SENSITIVITY = 1;
 
     private final Vector3f position;
 
@@ -19,9 +21,12 @@ public class Camera {
     @Setter
     private float rotationSpeed = cameraSpeed*12;
 
-    public Camera() {
+    private MouseUtils mouseUtils = new MouseUtils();
+
+    public Camera(Window window) {
         position = new Vector3f();
         rotation = new Vector3f();
+        mouseUtils.init(window);
     }
 
     public Camera(Vector3f position, Vector3f rotation) {
@@ -102,5 +107,10 @@ public class Camera {
             movePosition(0, -cameraSpeed, 0);
         }
 
+        mouseUtils.input(window);
+        if (mouseUtils.isRightButtonPressed()) {
+            Vector2f rotVec = mouseUtils.getDisplVec();
+            moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+        }
     }
 }

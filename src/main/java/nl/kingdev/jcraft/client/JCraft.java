@@ -23,13 +23,15 @@ public class JCraft {
     boolean up = true;
 
 
-    public Camera camera = new Camera();
+    public Camera camera;
 
     public World world = new World();
 
 
     private void boot() {
         window = new Window(1080, 720, "JCraft");
+
+        camera = new Camera(window);
 
         window.setVisible(true);
         MatrixUtils.setup(window);
