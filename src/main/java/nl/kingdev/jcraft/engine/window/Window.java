@@ -42,6 +42,12 @@ public class Window {
                 if (!keysDown.contains(key)) {
                     keysDown.add(key);
                 }
+                if(key == GLFW_KEY_O) {
+                    wireframe = !wireframe;
+                    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE: GL_FILL);
+                }
+
+
             }
             if (action == GLFW_RELEASE) {
                 if (keysDown.contains(key)) {
@@ -50,6 +56,8 @@ public class Window {
             }
         });
     }
+
+    private boolean wireframe = false;
 
     public void setVisible(boolean v) {
         if (v) {

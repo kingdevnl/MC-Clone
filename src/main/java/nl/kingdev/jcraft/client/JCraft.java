@@ -51,14 +51,10 @@ public class JCraft {
 
         world.build();
 
-
-
         camera.setPosition(5, 4, 34);
-
 
 //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        Random random = new Random();
         while (!window.isCloseRequested()) {
             window.clear();
 
@@ -77,17 +73,7 @@ public class JCraft {
                     chunk.getMesh().render();
                 }
 
-                chunk.getRotation().x +=0.05f * random.nextFloat();
-                chunk.getRotation().y +=0.05f * random.nextFloat();;
-                chunk.getRotation().z +=0.05f * (random.nextFloat() * 10);;
             }
-//            for(GameObject gameObject : gameObjects) {
-//
-//                shaderProgram.setMatrixUniform("worldViewMatrix", MatrixUtils.getWorldViewMatrix(gameObject, camera));
-//                gameObject.getMesh().render();
-//
-//            }
-
 
             shaderProgram.unbind();
 
