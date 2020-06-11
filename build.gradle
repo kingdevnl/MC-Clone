@@ -39,6 +39,9 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
     implementation "org.joml:joml:${jomlVersion}"
 
+    // https://mvnrepository.com/artifact/javax.vecmath/vecmath
+    compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
+
 
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'

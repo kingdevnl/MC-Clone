@@ -16,6 +16,7 @@ public class Mesh implements IDestroyable {
 
     private final int vao, vbo, idxVbo, vertexCount;
 
+
     public Mesh(float[] positions, int[] indices) {
 
         FloatBuffer posBuffer = MemoryUtil.memAllocFloat(positions.length);
@@ -24,7 +25,7 @@ public class Mesh implements IDestroyable {
         posBuffer.put(positions).flip();
         indicesBuffer.put(indices).flip();
 
-        vertexCount = indices.length;
+        vertexCount = positions.length/3;
 
 
         vao = glGenVertexArrays();
@@ -55,6 +56,7 @@ public class Mesh implements IDestroyable {
         glBindVertexArray(vbo);
         glEnableVertexAttribArray(0);
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+//        glDrawArrays(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT);
         glDisableVertexAttribArray(0);
         glBindVertexArray(0);
 

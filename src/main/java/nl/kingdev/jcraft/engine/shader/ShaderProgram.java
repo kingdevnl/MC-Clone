@@ -3,6 +3,7 @@ package nl.kingdev.jcraft.engine.shader;
 
 import nl.kingdev.jcraft.utils.Logger;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.BufferedReader;
@@ -49,6 +50,10 @@ public class ShaderProgram {
             glUniformMatrix4fv(uniformLocations.get(name), false, matrix.get(stack.mallocFloat(16)));
         }
 
+    }
+
+    public void setVectorUniform(String name, Vector3f value) {
+        glUniform3f(uniformLocations.get(name), value.x, value.y, value.z);
     }
 
     private void loadShaderProgram() {
@@ -107,6 +112,8 @@ public class ShaderProgram {
     public Logger getLogger() {
         return logger;
     }
+
+
 
     private static class Shader {
         protected String file;

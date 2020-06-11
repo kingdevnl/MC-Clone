@@ -1,17 +1,12 @@
 package nl.kingdev.jcraft.client;
 
 import lombok.Getter;
+import nl.kingdev.jcraft.client.world.World;
+import nl.kingdev.jcraft.client.world.chunk.Chunk;
 import nl.kingdev.jcraft.engine.camera.Camera;
-import nl.kingdev.jcraft.engine.gameobj.GameObject;
-import nl.kingdev.jcraft.engine.mesh.Mesh;
 import nl.kingdev.jcraft.engine.shader.ShaderProgram;
 import nl.kingdev.jcraft.engine.utils.MatrixUtils;
 import nl.kingdev.jcraft.engine.window.Window;
-import org.joml.Vector3f;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-
-import javax.xml.transform.Transformer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -30,6 +25,9 @@ public class JCraft {
 
     public Camera camera = new Camera();
 
+    public World world = new World();
+
+
     private void boot() {
         window = new Window(1080, 720, "JCraft");
 
@@ -45,39 +43,66 @@ public class JCraft {
         shaderProgram.setMatrixUniform("projectionMatrix", MatrixUtils.projectionMatrix);
         shaderProgram.unbind();
 
-        Mesh mesh = new Mesh(new float[]{
-                -1, -1, 0,
-                1, -1, 0,
-                0, 1, 0,
-        }, new int[]{0, 1, 2});
 
-        GameObject gameObject = new GameObject(mesh);
-        gameObject.setPosition(new Vector3f(0, 0, -5));
+        world.build();
+
+
+//        camera.setPosition(0,0,-5);
+
+
+//        fastNoise.SetNoiseType(FastNoise.NoiseType.Cubic);
+
+//        int size = 40;
+//        for (int x = 0; x < size; x++) {
+//            for (int y = 0; y < size; y++) {
+//                for (int z = 0; z < 2; z++) {
+//                    GameObject obj = new GameObject(mesh);
+//                    int perlin = (int) (fastNoise.GetNoise(x, y) * 100);
+//
+//                    obj.setPosition(new Vector3f(-1+x, z+perlin, -5+y));
+//                    gameObjects.add(obj);
+//                }
+//
+//
+//            }
+//        }
+
+
+        camera.setPosition(5, 4, 34);
+
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         while (!window.isCloseRequested()) {
             window.clear();
 
             glEnable(GL_DEPTH_TEST);
-
-            shaderProgram.bind();
             camera.update(window);
+            shaderProgram.bind();
 
-            shaderProgram.setMatrixUniform("worldViewMatrix", MatrixUtils.getWorldViewMatrix(gameObject, camera));
-            mesh.render();
+            for (Chunk chunk : world.getChunks()) {
+                shaderProgram.setMatrixUniform("worldViewMatrix", MatrixUtils.getWorldViewMatrix(chunk, camera));
+
+                System.out.println("RenderChunk: "+chunk);
+                if (chunk.getMesh() != null) {
+                    chunk.getMesh().render();
+                }
+            }
+//            for(GameObject gameObject : gameObjects) {
+//
+//                shaderProgram.setMatrixUniform("worldViewMatrix", MatrixUtils.getWorldViewMatrix(gameObject, camera));
+//                gameObject.getMesh().render();
+//
+//            }
             shaderProgram.unbind();
-
-
-
-            gameObject.getRotation().x+=.5f;
-            gameObject.getRotation().y+=1f;
-
 
             glDisable(GL_DEPTH_TEST);
 
 
-            gameObject.setScale(scale);
             window.update();
         }
+        world.destroy();
         shaderProgram.destroy();
-        mesh.destroy();
+
+
     }
 }

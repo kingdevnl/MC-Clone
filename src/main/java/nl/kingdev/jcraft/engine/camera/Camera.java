@@ -88,5 +88,19 @@ public class Camera {
         if(window.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
             moveRotation(0, rotationSpeed, 0);
         }
+        if(window.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+            moveRotation(rotationSpeed, 0,0 );
+        }
+        if(window.isKeyDown(GLFW.GLFW_KEY_UP)) {
+            moveRotation(-rotationSpeed, 0,0 );
+        }
+
+        if(window.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
+            movePosition(0, cameraSpeed, 0);
+        }
+        if(window.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+            movePosition(0, -cameraSpeed, 0);
+        }
+
     }
 }
