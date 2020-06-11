@@ -2,6 +2,7 @@ package nl.kingdev.jcraft.client.world;
 
 import nl.kingdev.jcraft.client.world.chunk.Chunk;
 import nl.kingdev.jcraft.engine.intefaces.IDestroyable;
+import nl.kingdev.jcraft.engine.utils.FastNoise;
 import org.joml.Vector3i;
 
 import javax.vecmath.Vector3d;
@@ -20,8 +21,14 @@ public class World implements IDestroyable {
 
     public void build() {
 
-        chunks.add(new Chunk(new Vector3i(0,0,0)));
-        chunks.add(new Chunk(new Vector3i(1,0,0)));
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                chunks.add(new Chunk(new Vector3i(i,0,j)));
+
+            }
+        }
+
+
 
 
     }

@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -19,13 +20,14 @@ public class Mesh implements IDestroyable {
 
     public Mesh(float[] positions, int[] indices) {
 
+
         FloatBuffer posBuffer = MemoryUtil.memAllocFloat(positions.length);
         IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
 
         posBuffer.put(positions).flip();
         indicesBuffer.put(indices).flip();
 
-        vertexCount = positions.length/3;
+        vertexCount = indices.length;
 
 
         vao = glGenVertexArrays();
@@ -53,10 +55,9 @@ public class Mesh implements IDestroyable {
 
     public void render() {
 
-        glBindVertexArray(vbo);
+        glBindVertexArray(vao);
         glEnableVertexAttribArray(0);
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
-//        glDrawArrays(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT);
         glDisableVertexAttribArray(0);
         glBindVertexArray(0);
 

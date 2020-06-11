@@ -4,6 +4,7 @@ import nl.kingdev.jcraft.client.world.block.Block;
 import nl.kingdev.jcraft.engine.gameobj.GameObject;
 import nl.kingdev.jcraft.engine.intefaces.IDestroyable;
 import nl.kingdev.jcraft.engine.mesh.Mesh;
+import nl.kingdev.jcraft.engine.utils.FastNoise;
 import nl.kingdev.jcraft.utils.ArrayUtils;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -19,11 +20,12 @@ public class Chunk extends GameObject implements IDestroyable {
 
     private Map<Vector3i, Block> blocks = new HashMap<>();
 
+    private static FastNoise fastNoise = new FastNoise((int) System.nanoTime());
 
     public Chunk(Vector3i chunkPos) {
         super(null);
 
-        this.setPosition(new Vector3f(chunkPos.x, chunkPos.y, chunkPos.z));
+        this.setPosition(new Vector3f(chunkPos.x*CHUNK_SIZE, chunkPos.y*CHUNK_HEIGHT, chunkPos.z*CHUNK_SIZE));
 
 
         fillChunk();
@@ -35,8 +37,8 @@ public class Chunk extends GameObject implements IDestroyable {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_HEIGHT; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
-                    Vector3i pos = new Vector3i(x, y, z);
-
+                    int perlin = (int) (fastNoise.GetPerlin(getPosition().x+x, getPosition().y+y) * 100);
+                    Vector3i pos = new Vector3i(x, y+perlin, z);
                     blocks.put(pos, new Block(1, pos));
 
                 }
@@ -51,89 +53,85 @@ public class Chunk extends GameObject implements IDestroyable {
         List<Float> verts = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
 
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_HEIGHT; y++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    Vector3i blockPos = new Vector3i(x, y, z);
+        blocks.forEach((blockPos, block) -> {
 
-                    if (getBlockAt(blockPos.x, blockPos.y, blockPos.z + 1) == null) {
-                        //FRONT
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //t-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + 1f)); //b-left
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //b-right
+            if (getBlockAt(blockPos.x, blockPos.y, blockPos.z + 1) == null) {
+                //FRONT
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //t-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + 1f)); //b-left
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //b-right
 
 
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //b-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //t-right
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //t-left
-                        //END-FRONT
-                    }
-
-                    if (getBlockAt(blockPos.x, blockPos.y, blockPos.z - 1) == null) {
-
-                        //BACK
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //b-left
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + -1f)); //b-right
-
-
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + -1f)); //b-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + -1f)); //t-right
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
-                        //END-BACK
-                    }
-                    if (getBlockAt(blockPos.x - 1, blockPos.y, blockPos.z) == null) {
-                        //LEFT
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + -1f)); //b-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-left
-
-
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //f-t-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z - 1f)); //b-t-left
-                        //END-LEFT
-                    }
-                    if (getBlockAt(blockPos.x + 1, blockPos.y, blockPos.z) == null) {
-                        //RIGHT
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + -1f)); //t-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + -1f)); //b-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-right
-
-
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //f-t-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z - 1f)); //b-t-right
-                        //END-RIGHT
-                    }
-                    if (getBlockAt(blockPos.x, blockPos.y + 1, blockPos.z) == null) {
-                        //TOP
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //back-b-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-left
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-right
-
-
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z - 1f)); //back-b-right
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //back-b-left
-                        //END-TOP
-                    }
-                    if (getBlockAt(blockPos.x, blockPos.y - 1, blockPos.z) == null) {
-                        //BOTTOM
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //back-b-left
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-left
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-right
-
-
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-right
-                        verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z - 1f)); //back-b-right
-                        verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //back-b-left
-                        //END-BOTTOM
-                    }
-                }
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //b-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //t-right
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //t-left
+                //END-FRONT
             }
-        }
-        System.out.println("done");
+
+            if (getBlockAt(blockPos.x, blockPos.y, blockPos.z - 1) == null) {
+
+                //BACK
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //b-left
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + -1f)); //b-right
+
+
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + -1f)); //b-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + -1f)); //t-right
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
+                //END-BACK
+            }
+            if (getBlockAt(blockPos.x - 1, blockPos.y, blockPos.z) == null) {
+                //LEFT
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //t-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + -1f)); //b-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-left
+
+
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //f-t-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z - 1f)); //b-t-left
+                //END-LEFT
+            }
+            if (getBlockAt(blockPos.x + 1, blockPos.y, blockPos.z) == null) {
+                //RIGHT
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + -1f)); //t-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + -1f)); //b-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-right
+
+
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y - 1f, blockPos.z + 1f)); //f-b-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //f-t-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z - 1f)); //b-t-right
+                //END-RIGHT
+            }
+            if (getBlockAt(blockPos.x, blockPos.y + 1, blockPos.z) == null) {
+                //TOP
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //back-b-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-left
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-right
+
+
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z + 1f)); //back-f-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + 1f, blockPos.z - 1f)); //back-b-right
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + 1f, blockPos.z + -1f)); //back-b-left
+                //END-TOP
+            }
+            if (getBlockAt(blockPos.x, blockPos.y - 1, blockPos.z) == null) {
+                //BOTTOM
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //back-b-left
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-left
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-right
+
+
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z + 1f)); //back-f-right
+                verts.addAll(Arrays.asList(blockPos.x + 1f, blockPos.y + -1f, blockPos.z - 1f)); //back-b-right
+                verts.addAll(Arrays.asList(blockPos.x + -1f, blockPos.y + -1f, blockPos.z + -1f)); //back-b-left
+                //END-BOTTOM
+            }
+        });
+
+
 
         for (int i = 0; i < verts.size() / 3; i++) {
             indices.add(i);

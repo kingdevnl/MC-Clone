@@ -47,26 +47,6 @@ public class JCraft {
         world.build();
 
 
-//        camera.setPosition(0,0,-5);
-
-
-//        fastNoise.SetNoiseType(FastNoise.NoiseType.Cubic);
-
-//        int size = 40;
-//        for (int x = 0; x < size; x++) {
-//            for (int y = 0; y < size; y++) {
-//                for (int z = 0; z < 2; z++) {
-//                    GameObject obj = new GameObject(mesh);
-//                    int perlin = (int) (fastNoise.GetNoise(x, y) * 100);
-//
-//                    obj.setPosition(new Vector3f(-1+x, z+perlin, -5+y));
-//                    gameObjects.add(obj);
-//                }
-//
-//
-//            }
-//        }
-
 
         camera.setPosition(5, 4, 34);
 
@@ -82,7 +62,6 @@ public class JCraft {
             for (Chunk chunk : world.getChunks()) {
                 shaderProgram.setMatrixUniform("worldViewMatrix", MatrixUtils.getWorldViewMatrix(chunk, camera));
 
-                System.out.println("RenderChunk: "+chunk);
                 if (chunk.getMesh() != null) {
                     chunk.getMesh().render();
                 }
