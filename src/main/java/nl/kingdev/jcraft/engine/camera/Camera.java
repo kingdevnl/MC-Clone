@@ -16,7 +16,7 @@ public class Camera {
     private final Vector3f rotation;
 
     @Setter
-   private float cameraSpeed = 0.04f;
+   private float cameraSpeed = 0.5f;
 
     @Setter
     private float rotationSpeed = cameraSpeed*12;

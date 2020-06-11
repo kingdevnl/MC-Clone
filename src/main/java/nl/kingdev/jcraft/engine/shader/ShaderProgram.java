@@ -55,6 +55,9 @@ public class ShaderProgram {
     public void setVectorUniform(String name, Vector3f value) {
         glUniform3f(uniformLocations.get(name), value.x, value.y, value.z);
     }
+    public void setUniform(String uniformName, int value) {
+        glUniform1i(uniformLocations.get(uniformName), value);
+    }
 
     private void loadShaderProgram() {
         program = glCreateProgram();

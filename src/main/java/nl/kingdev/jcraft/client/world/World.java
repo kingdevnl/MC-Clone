@@ -21,8 +21,8 @@ public class World implements IDestroyable {
 
     public void build() {
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < 32; i++) {
+            for (int j = 0; j < 32; j++) {
                 chunks.add(new Chunk(new Vector3i(i,0,j)));
 
             }

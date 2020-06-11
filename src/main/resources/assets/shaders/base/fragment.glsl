@@ -1,7 +1,9 @@
-in vec4 pass_poss;
-out vec3 color;
+in  vec2 outTexCoord;
+out vec4 fragColor;
 
+uniform sampler2D texture_sampler;
 
-void main() {
-    color = vec3(pass_poss.x+0.5, 0.5, pass_poss.y+0.5);
+void main()
+{
+    fragColor = texture(texture_sampler, outTexCoord);
 }
