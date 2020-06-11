@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class Camera {
-    private static final float MOUSE_SENSITIVITY = 1;
+    private static final float MOUSE_SENSITIVITY = .3f;
 
     private final Vector3f position;
 

@@ -15,15 +15,18 @@ import java.util.*;
 public class Chunk extends GameObject implements IDestroyable {
 
     private final int CHUNK_SIZE = 16;
-    private final int CHUNK_HEIGHT = 4;
+    private final int CHUNK_HEIGHT = 1;
 
 
     private Map<Vector3i, Block> blocks = new HashMap<>();
 
     private static FastNoise fastNoise = new FastNoise((int) System.nanoTime());
 
+    private Vector3i chunkPos;
+
     public Chunk(Vector3i chunkPos) {
         super(null);
+        this.chunkPos = chunkPos;
 
         this.setPosition(new Vector3f(chunkPos.x*CHUNK_SIZE, chunkPos.y*CHUNK_HEIGHT, chunkPos.z*CHUNK_SIZE));
 
@@ -37,8 +40,14 @@ public class Chunk extends GameObject implements IDestroyable {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_HEIGHT; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
-                    int perlin = (int) (fastNoise.GetPerlin(getPosition().x+x, getPosition().y+y) * 100);
-                    Vector3i pos = new Vector3i(x, y+perlin, z);
+
+
+                    float perlinX = (chunkPos.x * CHUNK_SIZE) + x;
+                    float perlinZ = (chunkPos.z * CHUNK_SIZE) + z;
+
+
+                    int perlin = (int) (fastNoise.GetPerlin(perlinX, perlinZ) * 100);
+                    Vector3i pos = new Vector3i(x, perlin, z);
                     blocks.put(pos, new Block(1, pos));
 
                 }
